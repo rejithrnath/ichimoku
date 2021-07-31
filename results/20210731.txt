@@ -1,0 +1,19 @@
+Start ICHIMOKU TRADING STRATEGY -> Sat Jul 31 11:46:27 2021 
+
+*******************************************************************
+ACC is Detected in ICHIMOKU  Long Position. Close = 19.56, Result = Buy, Volume = 196099.00,  Daily Gain =(+0.36%)
+
+ARGEO is Detected in ICHIMOKU  Long Position. Close = 8.49, Result = Sell, Volume = 410.00,  Daily Gain =(-3.99%)
+
+BGBIO is Detected in ICHIMOKU  Long Position. Close = 24.62, Result = Buy, Volume = 4594.00,  Daily Gain =(-1.71%)
+
+HMONY is Detected in ICHIMOKU  Long Position. Close = 0.54, Result = Buy, Volume = 10094.00,  Daily Gain =(-0.66%)
+
+HYARD is Detected in ICHIMOKU  Long Position. Close = 9.75, Result = Buy, Volume = 10364.00,  Daily Gain =(-0.66%)
+
+KMCP is Detected in ICHIMOKU  Long Position. Close = 7.18, Result = Buy, Volume = 3043.00,  Daily Gain =(-0.32%)
+
+NAS is Detected in ICHIMOKU  Short Position. Close = 10.59, Result = Buy, Volume = 85289.00,  Daily Gain =(-6.03%)
+
+NSOL is Detected in ICHIMOKU  Short Position. Close = 8.30, Result = Sell, Volume = 6827.00,  Daily Gain =(+0.44%)
+

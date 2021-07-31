@@ -46,7 +46,7 @@ def delete_results():
     shutil.rmtree('results')
     shutil.rmtree('DD')
     os.makedirs('results')
-    os.makedirs('DD') 
+    # os.makedirs('DD') 
     save_path = 'results/'
     filename_results = datetime.datetime.now().strftime("%Y%m%d")
     completeName = os.path.join(save_path, filename_results+".txt") 
@@ -167,8 +167,8 @@ def ichimoku():
                 print("{0} is Detected in ICHIMOKU  Long Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Long_Buy'],d.iloc[-1]['Volume'], gain_day ))
                 
             if d.iloc[-1]['Short_Position'] == 1 or d.iloc[-1]['Short_Position'] == -1 :
-                    print("{0} is Detected in ICHIMOKU  Short Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_Buy'],d.iloc[-1]['Volume'], gain_day ), file=f)
-                    print("{0} is Detected in ICHIMOKU  Short Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_Buy'],d.iloc[-1]['Volume'], gain_day ))
+                    print("{0} is Detected in ICHIMOKU  !! Short Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_Buy'],d.iloc[-1]['Volume'], gain_day ), file=f)
+                    print("{0} is Detected in ICHIMOKU  !! Short Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_Buy'],d.iloc[-1]['Volume'], gain_day ))
         
                     
             f.close()
