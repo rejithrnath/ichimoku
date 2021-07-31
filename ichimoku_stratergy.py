@@ -179,7 +179,7 @@ def email_export():
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
     
-    subject = "SP500 Results "+ str(datetime.datetime.now())
+    subject = "Ichimoku Kinko Hyo OSL Results "+ str(datetime.datetime.now())
     body = "Email with attachment "
     
     sender_email = temp.config.sender_email
