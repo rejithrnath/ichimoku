@@ -35,7 +35,7 @@ save_path = 'results/'
 filename_results = datetime.datetime.now().strftime("%Y%m%d")
 completeName = os.path.join(save_path, filename_results+".txt")
 
-delta_time=60
+delta_time=100
 
 def createdirectory():
     shutil.rmtree('datasets')
