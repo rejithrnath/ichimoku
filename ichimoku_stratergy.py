@@ -247,11 +247,11 @@ def main():
     download_and_email()
     trading_time = ["09","10","11","12","13","14","15","16","17"]
     for x in trading_time:
-        schedule.every().monday.at(str(x)+":15").do(download_and_email)
-        schedule.every().tuesday.at(str(x)+":15").do(download_and_email)
-        schedule.every().wednesday.at(str(x)+":15").do(download_and_email)
-        schedule.every().thursday.at(str(x)+":15").do(download_and_email)
-        schedule.every().friday.at(str(x)+":15").do(download_and_email)
+        schedule.every().monday.at(str(x)+":16").do(download_and_email)
+        schedule.every().tuesday.at(str(x)+":16").do(download_and_email)
+        schedule.every().wednesday.at(str(x)+":16").do(download_and_email)
+        schedule.every().thursday.at(str(x)+":16").do(download_and_email)
+        schedule.every().friday.at(str(x)+":16").do(download_and_email)
  
     while True:
         schedule.run_pending()
