@@ -1,3 +1,13 @@
-Start ICHIMOKU TRADING STRATEGY SP100 DaY Edition -> Wed Aug  4 06:42:22 2021 
+Start ICHIMOKU TRADING STRATEGY SP100 DaY Edition -> Wed Aug  4 21:21:31 2021 
 
 *******************************************************************
+ACC is Detected in ICHIMOKU  **Short** Position. Close = 20.00, Result = Buy, Volume = 1201211.00,  Daily Gain =(-0.99%)
+
+ADS is Detected in ICHIMOKU  **Short** Position. Close = 1.74, Result =  , Volume = 47500.00,  Daily Gain =(-2.06%)
+
+AKER is Detected in ICHIMOKU  **Short** Position. Close = 643.50, Result = Buy, Volume = 54980.00,  Daily Gain =(+0.18%)
+
+AUSS is Detected in ICHIMOKU  Long Position. Close = 116.70, Result = Buy, Volume = 170381.00,  Daily Gain =(-0.18%)
+
+AWDR is Detected in ICHIMOKU  **Short** Position. Close = 3.75, Result =  , Volume = 1050.00,  Daily Gain =(-0.18%)
+
