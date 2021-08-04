@@ -171,13 +171,13 @@ def ichimoku():
                 print("{0} is Detected in ICHIMOKU  Long Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Long_Sell'],d.iloc[-1]['Volume'], gain_day ), file=f)
                 print("{0} is Detected in ICHIMOKU  Long Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Long_Sell'],d.iloc[-1]['Volume'], gain_day ))
            
-            if d.iloc[-1]['Short_Position'] == -1  :
-                print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_Sell'],d.iloc[-1]['Volume'], gain_day ), file=f)
-                print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_Sell'],d.iloc[-1]['Volume'], gain_day ))
+            # if d.iloc[-1]['Short_Position'] == -1  :
+            #     print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_Sell'],d.iloc[-1]['Volume'], gain_day ), file=f)
+            #     print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_Sell'],d.iloc[-1]['Volume'], gain_day ))
             
-            if d.iloc[-1]['Short_buy'] == 'Buy'  :
-                print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_buy'],d.iloc[-1]['Volume'], gain_day ), file=f)
-                print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_buy'],d.iloc[-1]['Volume'], gain_day ))
+            # if d.iloc[-1]['Short_buy'] == 'Buy'  :
+            #     print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_buy'],d.iloc[-1]['Volume'], gain_day ), file=f)
+            #     print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_buy'],d.iloc[-1]['Volume'], gain_day ))
          
             f.close()
             
