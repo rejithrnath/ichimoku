@@ -24,16 +24,16 @@ for filename in os.listdir('DD'):
                         
             d.drop(d[d['Long_Position'] == 0].index, inplace = True)
             d.dropna(subset=['Long_Position'], inplace = True)
-            
+            d.dropna(subset=['Long_Sell'], inplace = True)
             try:
                 if d.iloc[-1]['Long_Buy'] == 'Buy':
                     d.drop(d.tail(1).index,inplace=True) # drop last n rows
-                if d.iloc[0]['Long_Buy'] == 'Sell':
+                if d.iloc[0]['Long_Sell'] == 'Sell':
                     d.drop(d.head(1).index,inplace=True) # drop last n rows
             except Exception:
                     pass
             d['Close_Buy'] = np.where((d['Long_Buy'] == 'Buy') , -1*d['Close'], 0)
-            d['Close_Sell'] = np.where((d['Long_Buy'] == 'Sell') , d['Close'], 0)
+            d['Close_Sell'] = np.where((d['Long_Sell'] == 'Sell') , d['Close'], 0)
             d.to_csv("back_test_results/Buy_Sell_{}.csv".format(symbol))    
             Total = d['Close_Buy'].sum() + d['Close_Sell'].sum()
             if Total >= 0 :
@@ -47,6 +47,6 @@ for filename in os.listdir('DD'):
             print (str(symbol) + " ->" + str(Total))
             f.close()
 f = open('backtestresult.txt', "a")
-print ("Count Positive or Zero" + " ->" + str(count_positive) + " Count Negative " + " ->" + str(count_negative) +" Total" + " ->" + str(Full_total), file=f)
-print ("Count Positive or Zero" + " ->" + str(count_positive) + " Count Negative" + " ->" + str(count_negative) +" Total" + " ->" + str(Full_total))
+print ("Count Positive" + " ->" + str(count_positive) + " Count Negative" + " ->" + str(count_negative) +" Total" + " ->" + str(Full_total), file=f)
+print ("Count Positive" + " ->" + str(count_positive) + " Count Negative" + " ->" + str(count_negative) +" Total" + " ->" + str(Full_total))
 f.close()
