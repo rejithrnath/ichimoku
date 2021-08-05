@@ -249,12 +249,12 @@ def download_and_email():
     print ("*******************************************************************" , file=f)
     f.close()
     print("End!")
-    #email_export()    
+    email_export()    
     
 def main():
     
     print("RUNNING ICHIMOKU TRADING STRATEGY !!")
-    download_and_email()
+    # download_and_email()
     trading_time = ["09","10","11","12","13","14","15","16","17"]
     for x in trading_time:
         schedule.every().monday.at(str(x)+":16").do(download_and_email)
