@@ -32,11 +32,15 @@ for filename in os.listdir('DD'):
                     d.drop(d.head(1).index,inplace=True) # drop last n rows
             except Exception:
                     pass
-            d['Close_Buy'] = np.where((d['Long_Buy'] == 'Buy') , -1*d['Close'], 0)
-            d['Close_Sell'] = np.where((d['Long_Sell'] == 'Sell') , d['Close'], 0)
+            d['Close_Buy_1'] = np.where((d['Long_Buy'] == 'Buy'  ) , 1, 2)
+            d['Close_Sell_1'] = np.where((d['Long_Sell'] == 'Close') ,  1, 2)
+            d['Close_Buy_2']=np.where((d['RSI2'] > 50  ) , 1, 3)
+            d['Close_Sell_2']=np.where((d['RSI2'] < 50  ) , 1, 3)
+            d['Close_Buy'] = np.where((d['Close_Buy_1']  == d['Close_Buy_2']  ) , -1*d['Close'], 0)
+            d['Close_Sell'] = np.where((d['Close_Sell_1']  == d['Close_Sell_2']  ) , d['Close'], 0)
             d.to_csv("back_test_results/Buy_Sell_{}.csv".format(symbol))    
             Total = d['Close_Buy'].sum() + d['Close_Sell'].sum()
-            if Total >= 0 :
+            if Total > 0 :
                 count_positive += 1
             else:
                 count_negative+=1

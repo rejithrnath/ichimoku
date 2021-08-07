@@ -36,7 +36,7 @@ save_path = 'results/'
 filename_results = datetime.datetime.now().strftime("%Y%m%d")
 completeName = os.path.join(save_path, filename_results+".txt")
 
-delta_time=365
+delta_time=100
 
 def createdirectory():
     shutil.rmtree('datasets')
@@ -45,9 +45,7 @@ def createdirectory():
     
 def delete_results():
     shutil.rmtree('results')
-    #shutil.rmtree('DD')
     os.makedirs('results')
-    # os.makedirs('DD') 
     save_path = 'results/'
     filename_results = datetime.datetime.now().strftime("%Y%m%d")
     completeName = os.path.join(save_path, filename_results+".txt") 
@@ -57,7 +55,6 @@ def delete_results():
 def yfinancedownload(csv_file_name, interval_time):
        start = datetime.datetime.today() - datetime.timedelta(delta_time)
        end = datetime.datetime.today()
-       # end ='2021-7-20'
        with open(csv_file_name) as f:
             lines = f.read().splitlines()
             for symbol in lines:
@@ -73,12 +70,9 @@ def yfinancedownload(csv_file_name, interval_time):
 
 def ichimoku():
 
-     gain_day = " "
-     dataframes = {}
-     # start = datetime.datetime.today() - datetime.timedelta(delta_time)
-     # # end = datetime.datetime.today()
-     # end ='2021-04-16'
-     for filename in os.listdir('datasets'):
+    gain_day = " "
+    dataframes = {}
+    for filename in os.listdir('datasets'):
             symbol = filename.split(".")[0]
             
             d = pandas.read_csv('datasets/{}'.format(filename))
@@ -111,34 +105,30 @@ def ichimoku():
             d['above_cloud'] = 0
             d['above_cloud'] = np.where((d['Low'] > d['senkou_span_a'])  & (d['Low'] > d['senkou_span_b'] ), 1, d['above_cloud'])
             d['above_cloud'] = np.where((d['High'] < d['senkou_span_a']) & (d['High'] < d['senkou_span_b']), -1, d['above_cloud'])
-            d['A_above_B'] = np.where((d['senkou_span_a'] > d['senkou_span_b']), 1, -1)
             d['tenkan_kiju_cross'] = np.NaN
             d['tenkan_kiju_cross'] = np.where((d['tenkan_sen'].shift(1) <= d['kijun_sen'].shift(1)) & (d['tenkan_sen'] > d['kijun_sen']), 1, d['tenkan_kiju_cross'])
             d['tenkan_kiju_cross'] = np.where((d['tenkan_sen'].shift(1) >= d['kijun_sen'].shift(1)) & (d['tenkan_sen'] < d['kijun_sen']), -1, d['tenkan_kiju_cross'])
-            d['price_tenkan_cross'] = np.NaN
-            d['price_tenkan_cross'] = np.where((d['Open'].shift(1) <= d['tenkan_sen'].shift(1)) & (d['Open'] > d['tenkan_sen']), 1, d['price_tenkan_cross'])
-            d['price_tenkan_cross'] = np.where((d['Open'].shift(1) >= d['tenkan_sen'].shift(1)) & (d['Open'] < d['tenkan_sen']), -1, d['price_tenkan_cross'])
             d['buy'] = np.NaN
-            d['buy'] = np.where((d['above_cloud'].shift(1) == 1) & (d['A_above_B'].shift(1) == 1) & ((d['tenkan_kiju_cross'].shift(1) == 1) | (d['price_tenkan_cross'].shift(1) == 1)), 1, d['buy'])
+            d['buy'] = np.where((d['above_cloud'].shift(1) == 1) &  ((d['tenkan_kiju_cross'].shift(1) == 1)), 1, d['buy'])
             d['buy'] = np.where(d['tenkan_kiju_cross'].shift(1) == -1, 0, d['buy'])
             d['buy'].ffill(inplace=True)
             
             d['Long_Position'] = d['buy'].diff()
             d['Long_Buy'] = d['Long_Position'].apply(lambda x: 'Buy' if x == 1 else ' ')
-            d['Long_Sell'] = d['tenkan_kiju_cross'].shift(1).apply(lambda x: 'Sell' if x == -1 else ' ')
+            d['Long_Sell'] = d['tenkan_kiju_cross'].shift(1).apply(lambda x: 'Close' if x == -1 else ' ')
             
             
             d['sell'] = np.NaN
-            d['sell'] = np.where((d['above_cloud'].shift(1) == -1) & (d['A_above_B'].shift(1) == -1) & ((d['tenkan_kiju_cross'].shift(1) == -1) | (d['price_tenkan_cross'].shift(1) == -1)), -1, d['sell'])
+            d['sell'] = np.where((d['above_cloud'].shift(1) == -1)  & ((d['tenkan_kiju_cross'].shift(1) == -1) ), -1, d['sell'])
             d['sell'] = np.where(d['tenkan_kiju_cross'].shift(1) == 1, 0, d['sell'])
             d['sell'].ffill(inplace=True)
             
             d['Short_Position'] = d['sell'].diff()
             d['Short_Sell'] = d['Short_Position'].apply(lambda x: 'Sell' if x == -1 else ' ')
-            d['Short_buy'] = d['tenkan_kiju_cross'].shift(1).apply(lambda x: 'Buy' if x == 1 else ' ')
-            # print (d)
-            d.to_csv("DD/DD_{}.csv".format(symbol))
-             #Webscrapping
+            d['Short_buy'] = d['tenkan_kiju_cross'].shift(1).apply(lambda x: 'Close' if x == 1 else ' ')
+            
+  
+            #Webscrapping
             try:
                 temp_dir = {}
                 url = 'https://finance.yahoo.com/quote/'+symbol+'/financials?p='+symbol
@@ -158,26 +148,45 @@ def ichimoku():
                 
             except Exception:
                     pass
- 
+            print("{0} -> Calculated \n".format(symbol))        
+            
+            
+            #RSI Calculation
+            window_length = 14
+            delta = d['Adj Close'].diff()
+            delta = delta[1:]
+            # Make the positive gains (up) and negative gains (down) Series
+            up, down = delta.clip(lower=0), delta.clip(upper=0)
+            
+            # Calculate the SMA
+            roll_up2 = up.rolling(window_length).mean()
+            roll_down2 = down.abs().rolling(window_length).mean()
+
+            # Calculate the RSI based on SMA
+            RS2 = roll_up2 / roll_down2
+            d['RSI2'] = 100.0 - (100.0 / (1.0 + RS2))
+            d.to_csv("DD/DD_{}.csv".format(symbol))
+            
+                   
            
            
             
             f = open(completeName, "a")
             if d.iloc[-1]['Long_Position'] == 1  :
-                print("{0} is Detected in ICHIMOKU  Long Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Long_Buy'],d.iloc[-1]['Volume'], gain_day ), file=f)
-                print("{0} is Detected in ICHIMOKU  Long Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Long_Buy'],d.iloc[-1]['Volume'], gain_day ))
+                print("{0} is Detected in ICHIMOKU  Long Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Long_Buy'],d.iloc[-1]['Volume'], gain_day, d.iloc[-1]['RSI2'] ), file=f)
+                print("{0} is Detected in ICHIMOKU  Long Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Long_Buy'],d.iloc[-1]['Volume'], gain_day, d.iloc[-1]['RSI2'] ))
             
-            if d.iloc[-1]['Long_Sell'] == 'Sell'  :
-                print("{0} is Detected in ICHIMOKU  Long Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Long_Sell'],d.iloc[-1]['Volume'], gain_day ), file=f)
-                print("{0} is Detected in ICHIMOKU  Long Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Long_Sell'],d.iloc[-1]['Volume'], gain_day ))
+            if d.iloc[-1]['Long_Sell'] == 'Close'  :
+                print("{0} is Detected in ICHIMOKU  Long Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Long_Sell'],d.iloc[-1]['Volume'], gain_day, d.iloc[-1]['RSI2'] ), file=f)
+                print("{0} is Detected in ICHIMOKU  Long Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Long_Sell'],d.iloc[-1]['Volume'], gain_day, d.iloc[-1]['RSI2'] ))
            
             if d.iloc[-1]['Short_Position'] == -1  :
-                print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_Sell'],d.iloc[-1]['Volume'], gain_day ), file=f)
-                print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_Sell'],d.iloc[-1]['Volume'], gain_day ))
+                print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_Sell'],d.iloc[-1]['Volume'], gain_day, d.iloc[-1]['RSI2'] ), file=f)
+                print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_Sell'],d.iloc[-1]['Volume'], gain_day, d.iloc[-1]['RSI2'] ))
             
-            if d.iloc[-1]['Short_buy'] == 'Buy'  :
-                print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_buy'],d.iloc[-1]['Volume'], gain_day ), file=f)
-                print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_buy'],d.iloc[-1]['Volume'], gain_day ))
+            if d.iloc[-1]['Short_buy'] == 'Close'  :
+                print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_buy'],d.iloc[-1]['Volume'], gain_day, d.iloc[-1]['RSI2'] ), file=f)
+                print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_buy'],d.iloc[-1]['Volume'], gain_day, d.iloc[-1]['RSI2'] ))
          
             f.close()
             
@@ -243,18 +252,18 @@ def download_and_email():
     print ("Start ICHIMOKU TRADING STRATEGY OL EDITION -> %s \n" % time.ctime(), file=f) 
     print ("*******************************************************************" , file=f)
     f.close()
-    yfinancedownload('input.csv','1h')
+    yfinancedownload('OSL.csv','1h')
     ichimoku()
     f = open(completeName, "a")
     print ("*******************************************************************" , file=f)
     f.close()
     print("End!")
-    email_export()    
+    # email_export()    
     
 def main():
     
     print("RUNNING ICHIMOKU TRADING STRATEGY !!")
-    # download_and_email()
+    download_and_email()
     trading_time = ["09","10","11","12","13","14","15","16","17"]
     for x in trading_time:
         schedule.every().monday.at(str(x)+":16").do(download_and_email)
