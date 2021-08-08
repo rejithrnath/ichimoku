@@ -127,7 +127,12 @@ def ichimoku():
             d['Short_Sell'] = d['Short_Position'].apply(lambda x: 'Sell' if x == -1 else ' ')
             d['Short_buy'] = d['tenkan_kiju_cross'].shift(1).apply(lambda x: 'Close' if x == 1 else ' ')
             
-  
+            ret = d['Close'].pct_change().dropna()
+            # summary = ret.describe().T.loc[:, ["mean", "std"]]
+            mean = ret.mean()*delta_time
+            std = ret.std()*delta_time    
+            d['Mean'] =mean
+            d['std'] = std
             #Webscrapping
             try:
                 temp_dir = {}
@@ -158,12 +163,12 @@ def ichimoku():
             # Make the positive gains (up) and negative gains (down) Series
             up, down = delta.clip(lower=0), delta.clip(upper=0)
             
-            # Calculate the SMA
-            roll_up2 = up.rolling(window_length).mean()
-            roll_down2 = down.abs().rolling(window_length).mean()
+            # Calculate the EWMA
+            roll_up1 = up.ewm(span=window_length).mean()
+            roll_down1 = down.abs().ewm(span=window_length).mean()
 
-            # Calculate the RSI based on SMA
-            RS2 = roll_up2 / roll_down2
+            # Calculate the RSI based on EWMA
+            RS2 = roll_up1 / roll_down1
             d['RSI2'] = 100.0 - (100.0 / (1.0 + RS2))
             d.to_csv("DD/DD_{}.csv".format(symbol))
             
@@ -173,20 +178,20 @@ def ichimoku():
             
             f = open(completeName, "a")
             if d.iloc[-1]['Long_Position'] == 1  :
-                print("{0} is Detected in ICHIMOKU  Long Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Long_Buy'],d.iloc[-1]['Volume'], gain_day, d.iloc[-1]['RSI2'] ), file=f)
-                print("{0} is Detected in ICHIMOKU  Long Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Long_Buy'],d.iloc[-1]['Volume'], gain_day, d.iloc[-1]['RSI2'] ))
+                print("{0} is Detected in ICHIMOKU  Long Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}, Mean ={6:.2f},Std ={7:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Long_Buy'],d.iloc[-1]['Volume'], gain_day, d.iloc[-2]['RSI2'],mean, std ), file=f)
+                print("{0} is Detected in ICHIMOKU  Long Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}, Mean ={6:.2f},Std ={7:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Long_Buy'],d.iloc[-1]['Volume'], gain_day, d.iloc[-2]['RSI2'],mean, std ))
             
             if d.iloc[-1]['Long_Sell'] == 'Close'  :
-                print("{0} is Detected in ICHIMOKU  Long Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Long_Sell'],d.iloc[-1]['Volume'], gain_day, d.iloc[-1]['RSI2'] ), file=f)
-                print("{0} is Detected in ICHIMOKU  Long Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Long_Sell'],d.iloc[-1]['Volume'], gain_day, d.iloc[-1]['RSI2'] ))
+                print("{0} is Detected in ICHIMOKU  Long Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}, Mean ={6:.2f},Std ={7:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Long_Sell'],d.iloc[-1]['Volume'], gain_day, d.iloc[-2]['RSI2'],mean, std ), file=f)
+                print("{0} is Detected in ICHIMOKU  Long Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}, Mean ={6:.2f},Std ={7:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Long_Sell'],d.iloc[-1]['Volume'], gain_day, d.iloc[-2]['RSI2'],mean, std ))
            
             if d.iloc[-1]['Short_Position'] == -1  :
-                print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_Sell'],d.iloc[-1]['Volume'], gain_day, d.iloc[-1]['RSI2'] ), file=f)
-                print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_Sell'],d.iloc[-1]['Volume'], gain_day, d.iloc[-1]['RSI2'] ))
+                print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}, Mean ={6:.2f},Std ={7:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_Sell'],d.iloc[-1]['Volume'], gain_day, d.iloc[-2]['RSI2'],mean, std ), file=f)
+                print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}, Mean ={6:.2f},Std ={7:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_Sell'],d.iloc[-1]['Volume'], gain_day, d.iloc[-2]['RSI2'] ,mean, std))
             
             if d.iloc[-1]['Short_buy'] == 'Close'  :
-                print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_buy'],d.iloc[-1]['Volume'], gain_day, d.iloc[-1]['RSI2'] ), file=f)
-                print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_buy'],d.iloc[-1]['Volume'], gain_day, d.iloc[-1]['RSI2'] ))
+                print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}, Mean ={6:.2f},Std ={7:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_buy'],d.iloc[-1]['Volume'], gain_day, d.iloc[-2]['RSI2'],mean, std ), file=f)
+                print("{0} is Detected in ICHIMOKU  **Short** Position. Close = {1:.2f}, Result = {2}, Volume = {3:.2f},  Daily Gain ={4}, RSI ={5:.2f}, Mean ={6:.2f},Std ={7:.2f}\n".format(symbol,d.iloc[-1]['Close'],d.iloc[-1]['Short_buy'],d.iloc[-1]['Volume'], gain_day, d.iloc[-2]['RSI2'],mean, std ))
          
             f.close()
             
@@ -258,12 +263,12 @@ def download_and_email():
     print ("*******************************************************************" , file=f)
     f.close()
     print("End!")
-    # email_export()    
+    email_export()    
     
 def main():
     
     print("RUNNING ICHIMOKU TRADING STRATEGY !!")
-    download_and_email()
+    #download_and_email()
     trading_time = ["09","10","11","12","13","14","15","16","17"]
     for x in trading_time:
         schedule.every().monday.at(str(x)+":16").do(download_and_email)
